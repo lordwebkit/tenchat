@@ -9,7 +9,13 @@ export default {
     "./error.vue",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "auth-left": "#F5F8FF",
+        "auth-right": "#6172f3 ",
+        "auth-element": "#8098F9",
+      },
+    },
   },
   plugins: [],
 };
