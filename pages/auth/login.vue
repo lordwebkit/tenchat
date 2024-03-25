@@ -17,8 +17,8 @@ const { loading, authenticated, authUserError } = storeToRefs(useAuthStore());
 const router = useRouter();
 
 const user = ref({
-  email: "kminchelle",
-  password: "0lelplR",
+  email: "",
+  password: "",
 });
 
 const isVisiblePassword = ref(false);
