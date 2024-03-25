@@ -5,7 +5,9 @@ import { useRegistrationStore } from "~/stores/registration";
 import AuthTitle from "~/components/auth/Title.vue";
 import AuthButton from "~/components/auth/Button.vue";
 
+const { clearForm } = useRegistrationStore();
 const { form } = storeToRefs(useRegistrationStore());
+
 const { authenticateUser } = useAuthStore();
 const { loading, authenticated } = storeToRefs(useAuthStore());
 
@@ -63,6 +65,8 @@ const login = async () => {
   await authenticateUser({ email: "kminchelle", password: "0lelplR" });
 
   if (authenticated) {
+    clearForm();
+    inputs.value = ["", "", "", "", "", ""];
     router.push("/");
   }
 };
