@@ -6,16 +6,16 @@ import AuthTitle from "~/components/auth/Title.vue";
 import AuthField from "~/components/auth/Field.vue";
 import AuthButton from "~/components/auth/Button.vue";
 import AuthWarning from "~/components/auth/Warning.vue";
+import AuthError from "~/components/auth/Error.vue";
 
 import IconPerson from "~/components/icon/person.vue";
 import IconEnvelope from "~/components/icon/envelope.vue";
 import IconEyeSlash from "~/components/icon/eyeSlash.vue";
 import IconShieldSlash from "~/components/icon/shieldSlash.vue";
 
-const { cleanForm, registrationUser } = useRegistrationStore();
-const { form, unique, loading, isWarningClean } = storeToRefs(
-  useRegistrationStore()
-);
+const { clearForm, registrationUser } = useRegistrationStore();
+const { form, unique, loading, isWarningFormLost, isNextRoutePath } =
+  storeToRefs(useRegistrationStore());
 
 const router = useRouter();
 
@@ -44,8 +44,37 @@ const isFormValid = computed(() => {
     return false;
   }
 
+  if (!passwordNotEqual.value.equal) {
+    return false;
+  }
+
   return true;
 });
+
+const passwordNotEqual = ref({
+  default: "Passwords do not match each other",
+  message: "",
+  equal: true,
+});
+
+const handleRegistration = () => {
+  if (!isFormValid.value) {
+    return;
+  }
+
+  if (form.value.password !== form.value.confirmPassword) {
+    passwordNotEqual.value.message = passwordNotEqual.value.default;
+    passwordNotEqual.value.equal = false;
+
+    setTimeout(() => {
+      passwordNotEqual.value.message = "";
+    }, 2000);
+
+    return;
+  }
+
+  registration();
+};
 
 const registration = async () => {
   await registrationUser();
@@ -110,6 +139,7 @@ definePageMeta({
           @input="
             (password) => {
               form.password = password;
+              passwordNotEqual.equal = true;
             }
           "
         >
@@ -133,6 +163,7 @@ definePageMeta({
           @input="
             (password) => {
               form.confirmPassword = password;
+              passwordNotEqual.equal = true;
             }
           "
         >
@@ -199,7 +230,7 @@ definePageMeta({
         <AuthButton
           :active="isFormValid"
           :loading="loading"
-          @click.prevent="() => (isFormValid ? registration() : '')"
+          @click.prevent="handleRegistration"
           :class="isFormValid ? 'cursor-pointer' : 'cursor-default'"
         >
           sign up
@@ -216,14 +247,15 @@ definePageMeta({
     </div>
   </div>
   <AuthWarning
-    :warning="isWarningClean"
+    :warning="isWarningFormLost"
     @deny="
       () => {
-        cleanForm();
-        navigateTo('/auth/login');
-        isWarningClean = false;
+        clearForm();
+        navigateTo(isNextRoutePath);
+        isWarningFormLost = false;
       }
     "
-    @confirm="() => (isWarningClean = false)"
+    @confirm="() => (isWarningFormLost = false)"
   />
+  <AuthError :message="passwordNotEqual.message" />
 </template>

@@ -1,6 +1,8 @@
 export default defineNuxtRouteMiddleware((to) => {
   const { authenticated } = storeToRefs(useAuthStore());
-  const { isFormEmpty, isWarningClean } = storeToRefs(useRegistrationStore());
+  const { isFormEmpty, isWarningFormLost, isNextRoutePath } = storeToRefs(
+    useRegistrationStore()
+  );
   const token = useCookie("token");
 
   if (token.value) {
@@ -10,10 +12,11 @@ export default defineNuxtRouteMiddleware((to) => {
   if (!token.value) {
     if (
       !isFormEmpty.value &&
-      to.name !== "auth-otp" &&
-      to.name !== "auth-signup"
+      to.name !== "auth-signup" &&
+      to.name !== "auth-otp"
     ) {
-      isWarningClean.value = true;
+      isWarningFormLost.value = true;
+      isNextRoutePath.value = to.fullPath;
       return navigateTo("/auth/signup");
     }
 

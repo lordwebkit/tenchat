@@ -8,7 +8,8 @@ interface User {
 }
 
 export const useRegistrationStore = defineStore("registration", () => {
-  const isWarningClean = ref(false);
+  const isWarningFormLost = ref(false);
+  const isNextRoutePath = ref("");
   const loading = ref(false);
   const unique = ref(false);
 
@@ -29,7 +30,7 @@ export const useRegistrationStore = defineStore("registration", () => {
     return true;
   });
 
-  const cleanForm = () => {
+  const clearForm = () => {
     for (let field in form.value) {
       const key: keyof User = field as keyof User;
       form.value[key] = "";
@@ -54,8 +55,9 @@ export const useRegistrationStore = defineStore("registration", () => {
     unique,
     loading,
     isFormEmpty,
-    isWarningClean,
-    cleanForm,
+    isWarningFormLost,
+    isNextRoutePath,
+    clearForm,
     registrationUser,
   };
 });
